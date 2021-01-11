@@ -2,7 +2,6 @@ import argparse
 from mip import BINARY, Model, xsum
 from sudokudata import SudokuData
 from sys import stdout as out
-from sys import argv
 
 def solve(args):
     inst = SudokuData(args.file)
@@ -45,11 +44,13 @@ def solve(args):
                     for i in range(i2*3,i2*3+3)
                         for j in range(j2*3, j2*3+3)) == 1
 
+    # numbers 1-9 on each long diagonal
     if args.diagonal:
         for k in range(9):
             m += xsum(x[i][i][k] for i in range(9)) == 1
             m += xsum(x[i][8 - i][k] for i in range(9)) == 1
 
+    # no cells containing the same value within one king's move of each other
     if args.antiking:
         king_moves = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
         for i in range(9):
@@ -61,6 +62,7 @@ def solve(args):
                         for k in range(9):
                             m += x[i][j][k] + x[i+move[0]][j+move[1]][k] <= 1
 
+    # no cells containing the same value within one knight's move of each other
     if args.antiknight:
         knight_moves = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
         for i in range(9):
@@ -72,6 +74,7 @@ def solve(args):
                         for k in range(9):
                             m += x[i][j][k] + x[i+move[0]][j+move[1]][k] <= 1
 
+    # no cells containing consecutive digits orthogonally adjacent to each other
     if args.anticonsecutive:
         orthog_adjacent = [(-1, 0), (0, -1), (0, 1), (1, 0)]
         for i in range(9):
@@ -110,12 +113,12 @@ def print_solution(x):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("file")
-    parser.add_argument("-an", "--antiknight", default=False, action="store_true", help="anti-knight sudoku rules apply")
-    parser.add_argument("-ak", "--antiking", default=False, action="store_true", help="anti-king sudoku rules apply")
-    parser.add_argument("-d", "--diagonal", default=False, action="store_true", help="diagonal sudoku rules apply")
     parser.add_argument("-ac", "--anticonsecutive", default=False, action="store_true", help="orthogonally adjacent cells must not contain consecutive digits")
+    parser.add_argument("-ak", "--antiking", default=False, action="store_true", help="anti-king sudoku rules apply")
+    parser.add_argument("-an", "--antiknight", default=False, action="store_true", help="anti-knight sudoku rules apply")
+    parser.add_argument("-d", "--diagonal", default=False, action="store_true", help="diagonal sudoku rules apply")
     args = parser.parse_args()
-    print(args)
+
     print_solution(solve(args))
 
 if __name__ == "__main__":
