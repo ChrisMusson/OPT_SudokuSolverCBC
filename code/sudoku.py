@@ -4,7 +4,7 @@ from sudokudata import SudokuData
 from sys import stdout as out
 
 def solve(args):
-    inst = SudokuData(args.file)
+    inst = SudokuData(args.file, args.killer)
     numbers = inst.numbers
     m = Model()
 
@@ -92,8 +92,21 @@ def solve(args):
                                 m += x[i][j][k] + x[i+move[0]][j+move[1]][k-1] <= 1
                                 m += x[i][j][k] + x[i+move[0]][j+move[1]][k+1] <= 1
 
-    m.optimize()
+    if args.killer:
+        layout = inst.killer_layout
+        regions = [tuple((int(r.strip()[2*k]), int(r.strip()[2*k+1])) for k in range(int((len(r.strip()) - 0.25) // 2))) for r in layout]
+        totals = [int(term.strip()[-2:]) if len(term.strip()) % 2 == 0 else int(term.strip()[-1:]) for term in layout]
 
+        # add region constraints
+        for n, region in enumerate(regions):
+            # no repeated digits in a region
+            for k in range(9):
+                m += xsum(x[cell[0]][cell[1]][k] for cell in region) <= 1
+            # if the total is given, ensure the cells sum to that number
+            if totals[n] > 0:
+                m += xsum(xsum((k+1) * x[cell[0]][cell[1]][k] for cell in region) for k in range(9)) == totals[n]
+
+    m.optimize()
     return x
 
 
@@ -110,9 +123,11 @@ def print_solution(x):
     except TypeError:
         print("\n\nNo solution could be found.\n\n")
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("file")
+    parser.add_argument("-k", "--killer", default=False, action="store_true", help="killer sudoku rules apply")
     parser.add_argument("-ac", "--anticonsecutive", default=False, action="store_true", help="orthogonally adjacent cells must not contain consecutive digits")
     parser.add_argument("-ak", "--antiking", default=False, action="store_true", help="anti-king sudoku rules apply")
     parser.add_argument("-an", "--antiknight", default=False, action="store_true", help="anti-knight sudoku rules apply")
