@@ -21,7 +21,7 @@ If you want to solve a killer sudoku, then as before, you need to provide the .t
 Then, as before, it is solved by running `python sudoku.py examples\killer_antiknight.txt -k -an`
 You can see the sources of the killer sudoku examples at the following links to ensure that you understand how the notation works.
 
-[killer anticonsecutive](https://app.crackingthecryptic.com/sudoku/j3m76TrmfD)
-[killer antiknight](https://i2.wp.com/www.djape.net/wp-content/uploads/2010/05/S001-M-AN.png)
-[killer easy](https://www.dailykillersudoku.com/puzzle/684)
-[killer hard](https://www.dailykillersudoku.com/puzzle/21332)
+[killer anticonsecutive](https://app.crackingthecryptic.com/sudoku/j3m76TrmfD)  
+[killer antiknight](https://i2.wp.com/www.djape.net/wp-content/uploads/2010/05/S001-M-AN.png)  
+[killer easy](https://www.dailykillersudoku.com/puzzle/684)  
+[killer hard](https://www.dailykillersudoku.com/puzzle/21332)  
